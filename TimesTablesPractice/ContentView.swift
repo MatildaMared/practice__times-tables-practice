@@ -35,6 +35,9 @@ struct ContentView: View {
     @State private var timesTableToPractice = 1
     @State private var numberOfQuestions = 5
     @State private var questions = [Question]()
+    @State private var currentQuestionIndex = 0
+    @State private var correctAnswers = 0
+    @State private var guess = 0
     
     var body: some View {
         ZStack {
@@ -58,7 +61,43 @@ struct ContentView: View {
     
     var gameView: some View {
         VStack {
-            Text("Game running")
+            Spacer ()
+            
+            Image("giraffe")
+                .scaleEffect(0.7)
+            
+            Text("Question \(currentQuestionIndex + 1)")
+                .font(.title)
+            
+            Text(questions[currentQuestionIndex].questionString)
+                .font(.title2)
+                .fontWeight(.light)
+                .padding()
+            
+            Form {
+                TextField("Guess", value: $guess, formatter: NumberFormatter())
+                    .keyboardType(.numberPad)
+                    //.listRowBackground(Color.white.opacity(0.5))
+            }
+            .frame(maxHeight: 100)
+            .padding()
+            .scrollContentBackground(.hidden)
+            
+            HStack {
+                ForEach(1..<4) {
+                    Button("\($0)") { }
+                }
+            }
+            
+            Button("Make Guess") {}
+                .padding()
+                .foregroundColor(.white)
+                .background(.purple)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            
+            Spacer()
+            
+            Spacer()
             
             Button("Reset Game") {
                 resetGame()
@@ -121,10 +160,13 @@ struct ContentView: View {
         gameStatus = GameStatus.Initial
         numberOfQuestions = 5
         timesTableToPractice = 1
+        correctAnswers = 0
     }
     
     func startGame() {
         generateQuestions()
+        currentQuestionIndex = 0
+        correctAnswers = 0
         gameStatus = GameStatus.Running
     }
     
