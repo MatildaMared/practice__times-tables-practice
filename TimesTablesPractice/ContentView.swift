@@ -34,6 +34,7 @@ struct ContentView: View {
     @State private var gameStatus = GameStatus.Initial
     @State private var timesTableToPractice = 1
     @State private var numberOfQuestions = 5
+    @State private var questions = [Question]()
     
     var body: some View {
         ZStack {
@@ -88,8 +89,8 @@ struct ContentView: View {
             
             List {
                 Picker("Times table", selection: $timesTableToPractice) {
-                    ForEach(1..<13) {
-                        Text("\($0)")
+                    ForEach(0..<13) {
+                        Text("\($0 + 1)").tag($0 + 1)
                     }
                 }
                 .listRowBackground(Color.white.opacity(0.5))
@@ -118,11 +119,37 @@ struct ContentView: View {
     
     func resetGame() {
         gameStatus = GameStatus.Initial
+        numberOfQuestions = 5
+        timesTableToPractice = 1
     }
     
     func startGame() {
+        generateQuestions()
         gameStatus = GameStatus.Running
     }
+    
+    func generateQuestions() {
+        let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        for _ in 1...numberOfQuestions {
+            var numbersForQuestion = [Int]()
+            numbersForQuestion.append(timesTableToPractice)
+            numbersForQuestion.append(numbers[Int.random(in: 0..<12)])
+            numbersForQuestion.shuffle()
+            
+            let firstNumber = numbersForQuestion[0]
+            let secondNumber = numbersForQuestion[1]
+            
+            let question = Question(questionString: "\(firstNumber) * \(secondNumber) = ?", answer: firstNumber * secondNumber)
+            print(question)
+            
+            questions.append(question)
+        }
+    }
+}
+
+struct Question {
+    var questionString: String
+    var answer: Int
 }
 
 struct ContentView_Previews: PreviewProvider {
