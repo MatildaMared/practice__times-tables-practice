@@ -7,17 +7,41 @@
 
 import SwiftUI
 
+enum GameStatus {
+    case Initial, Running, Completed
+}
+
 struct ContentView: View {
     let yellowColor = Color(hue: 0.121, saturation: 1.0, brightness: 0.939, opacity: 1.0)
-    
-    @State private var gameStatus = "notStarted"
+    @State private var scaleEffect = 0.5
+    @State private var gameStatus = GameStatus.Initial
     
     var body: some View {
         ZStack {
             Color(hue: 0.1339, saturation: 0.4, brightness: 1)
                 .ignoresSafeArea()
-            if gameStatus == "notStarted" {
+            
+            switch gameStatus {
+            case GameStatus.Initial:
                 initialView
+            case GameStatus.Running:
+                gameView
+            case GameStatus.Completed:
+                completedView
+            }
+        }
+    }
+    
+    var completedView: some View {
+        Text("Completed")
+    }
+    
+    var gameView: some View {
+        VStack {
+            Text("Game running")
+            
+            Button("Reset Game") {
+                resetGame()
             }
         }
     }
@@ -28,6 +52,12 @@ struct ContentView: View {
             
             Image("giraffe")
                 .padding()
+                .scaleEffect(scaleEffect)
+                .onAppear(perform: {
+                    withAnimation(.easeInOut(duration: 1.25)) {
+                        scaleEffect = 1
+                    }
+                })
             
             Text("Hello there, friend!")
                 .font(.title)
@@ -36,7 +66,9 @@ struct ContentView: View {
                 .padding()
                 .fontWeight(.light)
             
-            Button("Practice") {}
+            Button("Practice") {
+                startGame()
+            }
                 .padding()
                 .foregroundColor(.white)
                 .background(yellowColor)
@@ -47,6 +79,14 @@ struct ContentView: View {
             Spacer()
         }
         .padding()
+    }
+    
+    func resetGame() {
+        gameStatus = GameStatus.Initial
+    }
+    
+    func startGame() {
+        gameStatus = GameStatus.Running
     }
 }
 
