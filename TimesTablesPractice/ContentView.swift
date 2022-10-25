@@ -8,12 +8,43 @@
 import SwiftUI
 
 struct ContentView: View {
+    let yellowColor = Color(hue: 0.121, saturation: 1.0, brightness: 0.939, opacity: 1.0)
+    
+    @State private var gameStatus = "notStarted"
+    
     var body: some View {
+        ZStack {
+            Color(hue: 0.1339, saturation: 0.4, brightness: 1)
+                .ignoresSafeArea()
+            if gameStatus == "notStarted" {
+                initialView
+            }
+        }
+    }
+    
+    var initialView: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            Spacer()
+            
+            Image("giraffe")
+                .padding()
+            
+            Text("Hello there, friend!")
+                .font(.title)
+            
+            Text("Would you like to practice the times tables with me? It will be fun!")
+                .padding()
+                .fontWeight(.light)
+            
+            Button("Practice") {}
+                .padding()
+                .foregroundColor(.white)
+                .background(yellowColor)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            
+            Spacer()
+            
+            Spacer()
         }
         .padding()
     }
