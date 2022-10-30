@@ -53,6 +53,7 @@ struct ContentView: View {
                 completedView
             }
         }
+        .foregroundColor(.black)
     }
     
     var completedView: some View {
