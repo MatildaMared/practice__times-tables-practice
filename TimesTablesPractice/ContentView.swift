@@ -133,7 +133,7 @@ struct ContentView: View {
                         Text("\($0 + 1)").tag($0 + 1)
                     }
                 }
-                .listRowBackground(Color.white.opacity(0.5))
+                
                 
                 Picker("Number of questions", selection: $numberOfQuestions) {
                     Text("5").tag(5)
@@ -141,9 +141,11 @@ struct ContentView: View {
                     Text("15").tag(15)
                     Text("20").tag(20)
                 }
-                .listRowBackground(Color.white.opacity(0.5))
+
             }
+            .foregroundColor(.primary)
             .scrollContentBackground(.hidden)
+            .opacity(0.7)
             
             Button("Practice") {
                 startGame()
