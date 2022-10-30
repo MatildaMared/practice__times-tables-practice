@@ -37,27 +37,60 @@ struct ContentView: View {
     @State private var questions = [Question]()
     @State private var currentQuestionIndex = 0
     @State private var correctAnswers = 0
+    @State private var showAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
     @State private var guess = 0
+    @FocusState private var inputIsActive: Bool
     
     var body: some View {
-        ZStack {
-            Color(hue: 0.1339, saturation: 0.4, brightness: 1)
-                .ignoresSafeArea()
-            
-            switch gameStatus {
-            case GameStatus.Initial:
-                initialView
-            case GameStatus.Running:
-                gameView
-            case GameStatus.Completed:
-                completedView
+        NavigationView {
+            ZStack {
+                Color(hue: 0.1339, saturation: 0.4, brightness: 1)
+                    .ignoresSafeArea()
+                
+                switch gameStatus {
+                case GameStatus.Initial:
+                    initialView
+                case GameStatus.Running:
+                    gameView
+                case GameStatus.Completed:
+                    completedView
+                }
             }
+            .foregroundColor(.black)
         }
-        .foregroundColor(.black)
     }
     
     var completedView: some View {
-        Text("Completed")
+        VStack {
+            Spacer()
+            
+            Image("giraffe")
+                .padding()
+                .scaleEffect(scaleEffect)
+                .onAppear(perform: {
+                    withAnimation(.easeInOut(duration: 1.25)) {
+                        scaleEffect = 1
+                    }
+                })
+            
+            Text("Good work, my friend! 🥳")
+                .font(.title)
+            
+            Text("You got \(correctAnswers) of \(questions.count) questions correct! Want to play again?")
+                .padding()
+                .fontWeight(.light)
+            
+            Spacer()
+            
+            Button("Reset Game") {
+                resetGame()
+            }
+            .buttonStyles()
+            
+            Spacer()
+        }
     }
     
     var gameView: some View {
@@ -70,27 +103,33 @@ struct ContentView: View {
             Text("Question \(currentQuestionIndex + 1)")
                 .font(.title)
             
-            Text(questions[currentQuestionIndex].questionString)
-                .font(.title2)
-                .fontWeight(.light)
-                .padding()
-            
             Form {
+                
+                Text(questions[currentQuestionIndex].questionString)
+                
                 TextField("Guess", value: $guess, formatter: NumberFormatter())
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                     .keyboardType(.numberPad)
-                    //.listRowBackground(Color.white.opacity(0.5))
+                    .focused($inputIsActive)
+                    .toolbar {
+                       ToolbarItem(placement: .keyboard) {
+                          Button("Done") {
+                            inputIsActive = false
+                        }
+                    }
+                }
+                
             }
-            .frame(maxHeight: 100)
             .padding()
             .scrollContentBackground(.hidden)
+            .foregroundColor(.primary)
+            .opacity(0.7)
+
             
-            HStack {
-                ForEach(1..<4) {
-                    Button("\($0)") { }
-                }
+            Button("Make Guess") {
+                inputIsActive = false
+                makeGuess(guess)
             }
-            
-            Button("Make Guess") {}
                 .padding()
                 .foregroundColor(.white)
                 .background(.purple)
@@ -104,6 +143,20 @@ struct ContentView: View {
                 resetGame()
             }
             .buttonStyles()
+        }
+        .alert(alertTitle, isPresented: $showAlert) {
+            Text(alertMessage)
+            
+            if currentQuestionIndex == questions.count - 1 {
+                Button("Show Score") {
+                    gameStatus = GameStatus.Completed
+                }
+            } else {
+                Button("Next Question") {
+                    guess = 0
+                    currentQuestionIndex += 1
+                }
+            }
         }
     }
     
@@ -184,11 +237,25 @@ struct ContentView: View {
             let firstNumber = numbersForQuestion[0]
             let secondNumber = numbersForQuestion[1]
             
-            let question = Question(questionString: "\(firstNumber) * \(secondNumber) = ?", answer: firstNumber * secondNumber)
-            print(question)
+            let question = Question(questionString: "What is \(firstNumber) * \(secondNumber)?", answer: firstNumber * secondNumber)
             
             questions.append(question)
         }
+    }
+    
+    func makeGuess(_ userGuess: Int) {
+        let answer = questions[currentQuestionIndex].answer
+
+        if userGuess == answer {
+            alertTitle = "Correct! 🥳"
+            alertMessage = "Good work, keep going!"
+            correctAnswers += 1
+        } else {
+            alertTitle = "Incorrect... 😞"
+            alertMessage = "The correct answer was \(answer). Better luck next time!"
+        }
+        
+        showAlert = true
     }
 }
 
