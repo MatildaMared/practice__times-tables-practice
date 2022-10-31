@@ -84,12 +84,12 @@ struct ContentView: View {
             
             Spacer()
             
-            Button("Reset Game") {
+            Spacer()
+            
+            Button("Play Again") {
                 resetGame()
             }
             .buttonStyles()
-            
-            Spacer()
         }
     }
     
@@ -217,6 +217,8 @@ struct ContentView: View {
         numberOfQuestions = 5
         timesTableToPractice = 1
         correctAnswers = 0
+        guess = 0
+        questions.removeAll()
     }
     
     func startGame() {
